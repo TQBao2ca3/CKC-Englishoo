@@ -52,7 +52,8 @@ val pressedColor = Color(0xFF63A4FF) // màu xanh dương nhạt
 fun OnboardingScreen(
     navController: NavController,
     onStudentClick: () -> Unit = {},
-    onTeacherClick: () -> Unit = {}
+    onTeacherClick: () -> Unit = {},
+    onAdminClick: () -> Unit = {}
 ) {
     var showSplash by remember { mutableStateOf(true) }
     var showRoleDialog by remember { mutableStateOf(false) }
@@ -96,6 +97,10 @@ fun OnboardingScreen(
                 onTeacherClick = {
                     showRoleDialog = false
                     onTeacherClick()
+                },
+                onAdminClick = {
+                    showRoleDialog = false
+                    onAdminClick()
                 }
             )
         }
@@ -286,7 +291,7 @@ fun OnboardingContent(
             )
         ) {
             Text(
-                text = "Login",
+                text = "Đăng Nhập",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -305,7 +310,8 @@ fun OnboardingContent(
 fun RoleSelectionDialog(
     onDismiss: () -> Unit,
     onStudentClick: () -> Unit,
-    onTeacherClick: () -> Unit
+    onTeacherClick: () -> Unit,
+    onAdminClick: () -> Unit
 ) {
     val navController = androidx.navigation.compose.rememberNavController()
     var showRoleOptions by remember { mutableStateOf(true) }
@@ -342,10 +348,10 @@ fun RoleSelectionDialog(
                 // Admin card
                 RoleCard(
                     imageRes = R.drawable.admin,
-                    title = "Quản trị viên",
+                    title = "Admin",
                     description = "Quản lý người dùng và hệ thống",
                     onClick = {
-                        onDismiss()
+                        onAdminClick()
                     }
                 )
 
@@ -448,12 +454,6 @@ fun RoleCard(
                     color = Color.Gray
                 )
             }
-
-//            Icon(
-//                imageVector = Icons.Default.KeyboardArrowRight,
-//                contentDescription = null,
-//                modifier = Modifier.size(24.dp)
-//            )
         }
     }
 }
