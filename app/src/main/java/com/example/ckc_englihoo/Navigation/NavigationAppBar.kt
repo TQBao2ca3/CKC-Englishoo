@@ -16,7 +16,6 @@ fun NavigationApppBar(navController: NavController){
         NavItem.Home,
         NavItem.Course,
         NavItem.Lesson,
-        NavItem.Profile
     )
     NavigationBar (
 

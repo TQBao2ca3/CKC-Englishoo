@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ckceng.R
+import com.example.ckc_englihoo.R
 
 // Define types of questions
 enum class QuestionType {
@@ -33,10 +33,10 @@ enum class QuestionType {
     FillBlank
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VocabularyScreen(
+fun VocabularyScreenStudent(
     questionNumber: Int = 1,
     progressPercent: Float = 0.10f,
     category: String = "Fruit and vegetable",

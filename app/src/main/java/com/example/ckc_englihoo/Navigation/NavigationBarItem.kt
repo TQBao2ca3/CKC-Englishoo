@@ -15,7 +15,6 @@ sealed class NavItem (var icon: ImageVector, var item_route:String){
     object Home: NavItem(Icons.Rounded.Home,"home")
     object Course: NavItem(Icons.Rounded.PlayLesson,"course")
     object Lesson: NavItem(Icons.Rounded.MenuBook,"lesson")
-    object Profile: NavItem(Icons.Rounded.Settings,"profile")
 }
 
 @Composable
@@ -31,9 +30,6 @@ fun NavigationBarGraph(NavItemController: NavHostController, NavRootController: 
 
         }
         composable(NavItem.Lesson.item_route){
-
-        }
-        composable(NavItem.Profile.item_route){
 
         }
     }
