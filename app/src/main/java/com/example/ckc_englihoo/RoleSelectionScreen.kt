@@ -1,3 +1,5 @@
+package com.example.ckc_englihoo
+
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn

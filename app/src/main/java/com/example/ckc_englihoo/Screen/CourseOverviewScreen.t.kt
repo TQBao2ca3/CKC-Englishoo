@@ -1,4 +1,4 @@
-package com.example.ckceng.Screen
+package com.example.ckc_englihoo.Screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,8 +21,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ckceng.Card.CourseCard
-import com.example.ckceng.DataClass.CourseCardData
+import com.example.ckc_englihoo.Card.CourseCard
+import com.example.ckc_englihoo.DataClass.CourseCardData
 
 @Composable
 fun UnitOverviewScreen(modules: List<CourseCardData>) {

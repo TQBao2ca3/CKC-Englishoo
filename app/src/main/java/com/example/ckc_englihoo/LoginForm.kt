@@ -1,3 +1,5 @@
+package com.example.ckc_englihoo
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,11 +39,7 @@ enum class UserType {
 
 @Composable
 fun LoginForm(
-<<<<<<< HEAD
     userType: UserType = UserType.TEACHER,
-=======
-    navController: NavController,
->>>>>>> bb29a8b6feaeb7994b26158807cd893998a710e2
     onLoginClick: (String, String) -> Unit = { _, _ -> },
     onForgotPasswordClick: () -> Unit = {},
     onBackClick: () -> Unit = {}

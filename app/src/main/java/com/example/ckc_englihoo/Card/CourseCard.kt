@@ -1,4 +1,4 @@
-package com.example.ckceng.Card
+package com.example.ckc_englihoo.Card
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,7 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ckceng.DataClass.CourseCardData
+import com.example.ckc_englihoo.DataClass.CourseCardData
 
 @Composable
 fun CourseCard(data: CourseCardData) {

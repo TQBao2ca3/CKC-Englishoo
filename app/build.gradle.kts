@@ -40,7 +40,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
     packaging {
         resources {
@@ -50,37 +50,44 @@ android {
 }
 
 dependencies {
-    implementation("androidx.compose.material:material-icons-extended-android:1.5.4")
-    implementation ("androidx.core:core-ktx:1.12.0")
-    implementation ("androidx.appcompat:appcompat:1.6.1")
-    implementation ("androidx.compose.ui:ui:1.5.1")
-    implementation ("androidx.compose.material3:material3:1.1.0")
-    implementation ("androidx.compose.ui:ui-tooling-preview:1.5.1")
-    implementation ("androidx.activity:activity-compose:1.8.0")
-    implementation ("androidx.compose.material:material-icons-extended:1.5.1")
-
-    implementation("com.google.accompanist:accompanist-pager:0.28.0")
-    implementation("com.google.accompanist:accompanist-pager-indicators:0.28.0")
-    implementation("androidx.navigation:navigation-compose:2.7.4")
-    implementation("com.caverock:androidsvg:1.4")
-
-
+    // Core Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+
+    // Compose BOM - manages all compose library versions
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.ads.mobile.sdk)
+
+    // Material Icons Extended
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.7.4")
+
+    // Accompanist (for pager functionality)
+    implementation("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.28.0")
+
+    // SVG support
+    implementation("com.caverock:androidsvg:1.4")
+
+    // Ads SDK (commented out - uncomment if needed)
+    // implementation(libs.ads.mobile.sdk)
+
+    // Testing dependencies
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Debug dependencies
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

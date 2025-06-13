@@ -1,4 +1,4 @@
-package com.example.vocabularyscreen
+package com.example.ckc_englihoo.Screen
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -401,10 +401,11 @@ private fun SingleCharBox(
             capitalization = KeyboardCapitalization.Characters,
             autoCorrect = false
         ),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
+        colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = Color.LightGray,
-            containerColor = Color.Transparent
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent
         )
     )
 }

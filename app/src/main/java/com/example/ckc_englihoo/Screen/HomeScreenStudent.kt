@@ -1,4 +1,4 @@
-package com.example.ckc_englihoo.screen
+package com.example.ckc_englihoo.Screen
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.example.ckc_englihoo.R
 
 
-data class Course(
+data class HomeCourse(
     val id: Int,
     val name: String,
     val description: String,
@@ -60,9 +60,9 @@ fun HomeScreenS() {
     val studentName = "Nguyễn Văn A"
     val coursesInProgress = remember {
         listOf(
-            Course(1, "Tiếng Anh 101", "Cơ bản về tiếng Anh", "Ngô Kim Phụng", 0.6f, "Đang học"),
-            Course(2, "Tiếng Anh 102", "Ngữ pháp nâng cao", "Lê Minh Hà", 0.3f, "Đang học"),
-            Course(3, "Giao tiếp tiếng Anh", "Thực hành giao tiếp", "Phạm Thị Lan", 0.8f, "Đang học")
+            HomeCourse(1, "Tiếng Anh 101", "Cơ bản về tiếng Anh", "Ngô Kim Phụng", 0.6f, "Đang học"),
+            HomeCourse(2, "Tiếng Anh 102", "Ngữ pháp nâng cao", "Lê Minh Hà", 0.3f, "Đang học"),
+            HomeCourse(3, "Giao tiếp tiếng Anh", "Thực hành giao tiếp", "Phạm Thị Lan", 0.8f, "Đang học")
         )
     }
     val notifications = remember {
@@ -166,7 +166,7 @@ fun SectionTitle(title: String) {
 }
 
 @Composable
-fun CoursesRow(courses: List<Course>) {
+fun CoursesRow(courses: List<HomeCourse>) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)

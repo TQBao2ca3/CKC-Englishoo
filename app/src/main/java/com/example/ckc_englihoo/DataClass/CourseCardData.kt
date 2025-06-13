@@ -1,4 +1,4 @@
-package com.example.ckceng.DataClass
+package com.example.ckc_englihoo.DataClass
 
 import androidx.compose.runtime.Composable
 
