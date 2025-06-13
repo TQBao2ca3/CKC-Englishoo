@@ -14,7 +14,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CKC_EnglihooTheme {
+<<<<<<< HEAD
                 CourseRegistrationScreen()
+=======
+
+>>>>>>> bb29a8b6feaeb7994b26158807cd893998a710e2
             }
         }
     }

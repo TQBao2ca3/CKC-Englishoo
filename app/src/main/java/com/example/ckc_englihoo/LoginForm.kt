@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.ckc_englihoo.R
 
 enum class UserType {
@@ -36,7 +37,11 @@ enum class UserType {
 
 @Composable
 fun LoginForm(
+<<<<<<< HEAD
     userType: UserType = UserType.TEACHER,
+=======
+    navController: NavController,
+>>>>>>> bb29a8b6feaeb7994b26158807cd893998a710e2
     onLoginClick: (String, String) -> Unit = { _, _ -> },
     onForgotPasswordClick: () -> Unit = {},
     onBackClick: () -> Unit = {}
