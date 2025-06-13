@@ -252,13 +252,13 @@ fun LoginForm(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Info,
-                                contentDescription = "Forgot Password Icon",
+                                contentDescription = "Quên mật khẩu Icon",
                                 tint = Color.Red,
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "Quên mật khẩu?",
+                                text = "Nếu quên mật khẩu? Xin vui lòng liên hệ Mr.Hiền",
                                 color = Color.Red,
                                 fontSize = 14.sp
                             )

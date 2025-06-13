@@ -45,6 +45,9 @@ fun CourseRegistrationScreen(
     // State cho popup xác nhận
     var showConfirmDialog by remember { mutableStateOf(false) }
 
+    // State để kiểm tra xem có khóa học đang mở đăng ký không
+    var isRegistrationOpen by remember { mutableStateOf(true) } // Đặt false để hiển thị thông báo
+
     // Dữ liệu mẫu cho lịch khai giảng - Ban đầu không có gì được chọn
     var courseList by remember {
         mutableStateOf(
@@ -124,23 +127,29 @@ fun CourseRegistrationScreen(
         ) {
             // Header trường học (lấy từ LoginForm)
             SchoolHeader()
-            
-            // Lịch khai giảng
-            CourseScheduleSection(
-                courseList = courseList,
-                onCourseSelected = { selectedCourse ->
-                    courseList = courseList.map { course ->
-                        course.copy(isSelected = course == selectedCourse)
-                    }
-                }
-            )
 
-            // Button đăng ký khóa học
-            RegistrationButton(
-                isEnabled = selectedCourse != null,
-                selectedCourse = selectedCourse,
-                onRegisterClick = { showConfirmDialog = true }
-            )
+            // Kiểm tra xem có khóa học đang mở đăng ký không
+            if (isRegistrationOpen) {
+                // Lịch khai giảng
+                CourseScheduleSection(
+                    courseList = courseList,
+                    onCourseSelected = { selectedCourse ->
+                        courseList = courseList.map { course ->
+                            course.copy(isSelected = course == selectedCourse)
+                        }
+                    }
+                )
+
+                // Button đăng ký khóa học
+                RegistrationButton(
+                    isEnabled = selectedCourse != null,
+                    selectedCourse = selectedCourse,
+                    onRegisterClick = { showConfirmDialog = true }
+                )
+            } else {
+                // Hiển thị thông báo khi hết hạn đăng ký
+                RegistrationClosedNotification()
+            }
         }
     }
 
@@ -645,4 +654,83 @@ fun RegistrationConfirmDialog(
         containerColor = Color.White,
         shape = RoundedCornerShape(12.dp)
     )
+}
+
+@Composable
+fun RegistrationClosedNotification() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(18.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Card chứa thông báo
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Title với icon và canh giữa
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Icon bên trái
+                    Image(
+                        painter = painterResource(id = R.drawable.info),
+                        contentDescription = "Thông bao",
+                        modifier = Modifier
+                            .size(28.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // Title
+                    Text(
+                        text = "Thông báo",
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Blue,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                    Spacer(modifier = Modifier.width(20.dp))
+
+                // Nội dung thông báo
+                Text(
+                    text = "Đã hết hạn đăng ký học Anh văn",
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 24.sp
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Sinh viên đợi thông báo Khóa tiếp theo.",
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 24.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(40.dp))
+    }
 }
