@@ -10,8 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
+
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -40,8 +39,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.ckc_englihoo.R
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -175,7 +172,7 @@ fun OnboardingContent(
         )
     )
 
-    val pagerState = rememberPagerState()
+    val pagerState = androidx.compose.foundation.pager.rememberPagerState(pageCount = { pages.size })
     val scope = rememberCoroutineScope()
 
     Column(
@@ -206,8 +203,7 @@ fun OnboardingContent(
         Spacer(modifier = Modifier.weight(0.1f))
 
         // Sử dụng HorizontalPager để hỗ trợ vuốt
-        HorizontalPager(
-            count = pages.size,
+        androidx.compose.foundation.pager.HorizontalPager(
             state = pagerState,
             modifier = Modifier.weight(1f)
         ) { page ->

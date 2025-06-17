@@ -113,4 +113,10 @@ fun LoadingScreen(
     }
 }
 
-
+@Composable
+fun LoadingComponent() {
+    LoadingScreen(
+        loadingText = "Đang tải...",
+        onLoadingComplete = { /* Do nothing, handled by parent */ }
+    )
+}

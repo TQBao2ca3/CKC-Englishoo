@@ -286,7 +286,7 @@ fun LoginForm(
                         )
                     ) {
                         Text(
-                            text = "Login",
+                            text = "Đăng nhập",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )

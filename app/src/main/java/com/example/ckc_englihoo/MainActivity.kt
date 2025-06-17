@@ -4,7 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.ckc_englihoo.Screen.HomeScreenS
+import androidx.compose.runtime.Composable
+import androidx.navigation.compose.rememberNavController
+import com.example.ckc_englihoo.Navigation.RootGraph
+
 import com.example.ckc_englihoo.ui.theme.CKC_EnglihooTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +16,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CKC_EnglihooTheme {
-               HomeScreenS()
+                val navController = rememberNavController()
+                RootGraph(navController = navController)
             }
         }
     }

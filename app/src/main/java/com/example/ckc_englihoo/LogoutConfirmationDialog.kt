@@ -86,7 +86,7 @@ fun LogoutConfirmationDialog(
 
                 // Nội dung thông báo
                 Text(
-                    text = "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?",
+                    text = "Bạn có chắc chắn muốn đăng xuất không?",
                     fontSize = 16.sp,
                     color = Color(0xFF666666),
                     textAlign = TextAlign.Center,
