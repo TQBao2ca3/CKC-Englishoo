@@ -30,8 +30,12 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -44,6 +48,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,52 +63,110 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.ckc_englihoo.API.AppViewModel
+import com.example.ckc_englihoo.DataClass.*
 import com.example.ckc_englihoo.R
+import androidx.compose.ui.text.style.TextAlign
+import java.util.Date
 
-data class Course(
-    val id: Int,
-    val name: String,
-    val description: String,
-    val teacher: String,
-    val progress: Float,
-    val status: String
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
-//@Preview(showBackground = true)
 @Composable
-fun CourseScreenStudent() {
-    val studentName = "Nguyễn Văn A"
+fun CourseScreenStudent(
+    navController: NavController,
+    viewModel: AppViewModel
+) {
+    // Collect states from ViewModel
+    val currentStudent by viewModel.currentStudent.collectAsState()
+    val courses by viewModel.courses.collectAsState()
+    val courseEnrollments by viewModel.courseEnrollments.collectAsState()
+    val teachers by viewModel.teachers.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
-    // Dữ liệu mẫu với thêm thông tin
-    val allCourses = remember {
-        listOf(
-            Course(1, "Tiếng Anh 101", "Cơ bản về tiếng Anh", "Ngô Kim Phụng", 0.6f, "Đang học"),
-            Course(2, "Tiếng Anh 102", "Ngữ pháp nâng cao", "Lê Minh Hà", 1.0f, "Đã hoàn thành"),
-            Course(3, "Học Nói Tiếng Anh", "Thực hành kỹ năng nói", "Phạm Thị Lan", 0.2f, "Đang học"),
-            Course(4, "Văn phạm Nâng Cao", "Ngữ pháp chuyên sâu", "Trần Văn B", 0.0f, "Chưa học"),
-            Course(5, "TOEIC Preparation", "Luyện thi TOEIC", "Nguyễn Thị C", 0.8f, "Đang học"),
-            Course(6, "Business English", "Tiếng Anh thương mại", "Lê Văn D", 0.4f, "Đang học")
-        )
+    // Load data when component mounts
+    LaunchedEffect(Unit) {
+        viewModel.loadAllCourses()
+        viewModel.loadAllTeachers()
+        currentStudent?.let { student ->
+            viewModel.loadStudentEnrollments(student.student_id)
+        }
+    }
+
+    // Process courses with details to CourseDisplayUI
+    val allCourses = remember(courses, teachers, courseEnrollments) {
+        getCoursesWithDetails(courses, teachers, courseEnrollments)
     }
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedFilter by remember { mutableStateOf("Tất cả") }
 
-    val filterOptions = listOf("Tất cả", "Đang học", "Đã hoàn thành", "Chờ Đăng Ký")
+    val filterOptions = listOf("Tất cả", "Đang học", "Đã hoàn thành", "Chờ xác nhận")
 
     // Lọc khóa học theo tìm kiếm và bộ lọc
     val filteredCourses = allCourses.filter { course ->
-        val matchesSearch = course.name.contains(searchQuery, ignoreCase = true) ||
-                course.teacher.contains(searchQuery, ignoreCase = true)
+        val matchesSearch = course.courseName.contains(searchQuery, ignoreCase = true) ||
+                course.teacherName.contains(searchQuery, ignoreCase = true)
         val matchesFilter = selectedFilter == "Tất cả" || course.status == selectedFilter
         matchesSearch && matchesFilter
     }
 
     Scaffold(
-        topBar = { CourseTopSection(studentName) },
+        topBar = {
+            currentStudent?.let { student ->
+                CourseTopSection(student.fullname)
+            }
+        },
         containerColor = Color(0xFFF5F5F5)
     ) { paddingValues ->
+
+        // Show loading state
+        if (isLoading && courses.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+            return@Scaffold
+        }
+
+        // Show error state
+        errorMessage?.let { error ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Có lỗi xảy ra",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = {
+                        viewModel.clearError()
+                        viewModel.loadAllCourses()
+                    }
+                ) {
+                    Text("Thử lại")
+                }
+            }
+            return@Scaffold
+        }
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -123,6 +187,13 @@ fun CourseScreenStudent() {
 
             // Thống kê khóa học
             CourseStatsSection(allCourses)
+
+            Spacer(Modifier.height(16.dp))
+
+            // Nút đăng ký khóa học
+            RegisterCourseButton {
+                navController.navigate("course_registration")
+            }
 
             Spacer(Modifier.height(16.dp))
 
@@ -229,10 +300,10 @@ fun FilterSection(
 
 // Component thống kê khóa học
 @Composable
-fun CourseStatsSection(courses: List<Course>) {
+fun CourseStatsSection(courses: List<CourseDisplayUI>) {
     val completedCount = courses.count { it.status == "Đã hoàn thành" }
     val inProgressCount = courses.count { it.status == "Đang học" }
-    val notStartedCount = courses.count { it.status == "Chưa học" }
+    val pendingCount = courses.count { it.status == "Chờ xác nhận" }
 
     Row(
         modifier = Modifier
@@ -255,8 +326,8 @@ fun CourseStatsSection(courses: List<Course>) {
             modifier = Modifier.weight(1f)
         )
         StatCard(
-            title = "Chờ đăng ký",
-            count = notStartedCount,
+            title = "Chờ xác nhận",
+            count = pendingCount,
             color = Color(0xFFFF9800),
             icon = Icons.Default.FilterList,
             modifier = Modifier.weight(1f)
@@ -318,7 +389,7 @@ fun CourseSectionTitle(title: String) {
 
 // Component danh sách khóa học dạng grid
 @Composable
-fun CoursesGrid(courses: List<Course>) {
+fun CoursesGrid(courses: List<CourseDisplayUI>) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
@@ -332,7 +403,7 @@ fun CoursesGrid(courses: List<Course>) {
 
 // Component thẻ khóa học được cải tiến
 @Composable
-fun EnhancedCourseCard(course: Course) {
+fun EnhancedCourseCard(course: CourseDisplayUI) {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -349,7 +420,7 @@ fun EnhancedCourseCard(course: Course) {
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = course.name,
+                        text = course.courseName,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -364,9 +435,10 @@ fun EnhancedCourseCard(course: Course) {
                 // Status badge
                 Surface(
                     color = when (course.status) {
-                        "Đã hoàn thành" -> Color(0xFF4CAF50)
-                        "Đang học" -> Color(0xFF2196F3)
-                        else -> Color(0xFFFF9800)
+                        "Đã hoàn thành" -> Color(0xFF4CAF50) // Green
+                        "Đang học" -> Color(0xFF2196F3) // Blue
+                        "Chờ xác nhận" -> Color(0xFFFF9800) // Orange
+                        else -> Color(0xFF9E9E9E) // Gray
                     },
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -392,14 +464,14 @@ fun EnhancedCourseCard(course: Course) {
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "Giáo viên: ${course.teacher}",
+                    text = "Giáo viên: ${course.teacherName}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            // Progress bar và phần trăm
-            if (course.progress > 0f) {
+            // Progress bar và phần trăm (chỉ hiển thị khi không phải "Chờ xác nhận")
+            if (course.progress > 0f && course.status != "Chờ xác nhận") {
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -427,6 +499,98 @@ fun EnhancedCourseCard(course: Course) {
                         .clip(RoundedCornerShape(3.dp)),
                     color = Color(0xFF5D31FF),
                     trackColor = Color(0xFF5D31FF).copy(alpha = 0.2f)
+                )
+            }
+        }
+    }
+}
+
+// Helper function để xử lý courses từ ViewModel data
+// Chỉ hiển thị các courses có trong enrollments của student
+fun getCoursesWithDetails(
+    courses: List<Course>,
+    teachers: List<Teacher>,
+    enrollments: List<CourseEnrollment>
+): List<CourseDisplayUI> {
+    // Chỉ lấy các courses mà student đã enroll
+    return enrollments.mapNotNull { enrollment ->
+        val course = courses.find { it.course_id == enrollment.assigned_course_id }
+        if (course != null) {
+            // Tìm teacher cho course này
+            val teacher = teachers.find { teacher ->
+                // Tìm teacher được assign cho course này
+                teacher.courses.any { courseWithPivot ->
+                    courseWithPivot.course_id == course.course_id
+                }
+            }
+
+            val progress = when (enrollment.status) {
+                3 -> 1.0f // Hoàn thành
+                2 -> 0.6f // Đang học
+                1 -> 0.0f // Đang chờ xác nhận - không có progress
+                else -> 0.0f // Không xác định
+            }
+
+            val status = when (enrollment.status) {
+                3 -> "Đã hoàn thành"
+                2 -> "Đang học"
+                1 -> "Chờ xác nhận"
+                else -> "Không xác định"
+            }
+
+            CourseDisplayUI(
+                courseId = course.course_id,
+                courseName = course.course_name,
+                description = course.description,
+                teacherName = teacher?.fullname ?: "Chưa có giáo viên",
+                progress = progress,
+                status = status
+            )
+        } else {
+            null // Course không tồn tại
+        }
+    }
+}
+
+// Component nút đăng ký khóa học
+@Composable
+fun RegisterCourseButton(onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF4CAF50)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Button(
+            onClick = onClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Đăng ký",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Đăng ký khóa học mới",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }

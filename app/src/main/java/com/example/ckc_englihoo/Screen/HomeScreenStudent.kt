@@ -1,4 +1,4 @@
-package com.example.ckc_englihoo.screen
+package com.example.ckc_englihoo.Screen
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -34,50 +34,128 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.ckc_englihoo.API.AppViewModel
+import com.example.ckc_englihoo.DataClass.*
 import com.example.ckc_englihoo.R
-
-
-data class Course(
-    val id: Int,
-    val name: String,
-    val description: String,
-    val teacher: String,
-    val progress: Float,
-    val status: String
-)
-
-data class Notification(
-    val id: Int,
-    val title: String,
-    val description: String
-)
-
+import androidx.compose.ui.text.style.TextAlign
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
-//@Preview(showBackground = true)
 @Composable
-fun HomeScreenS() {
-    val studentName = "Nguyễn Văn A"
-    val coursesInProgress = remember {
-        listOf(
-            Course(1, "Tiếng Anh 101", "Cơ bản về tiếng Anh", "Ngô Kim Phụng", 0.6f, "Đang học"),
-            Course(2, "Tiếng Anh 102", "Ngữ pháp nâng cao", "Lê Minh Hà", 0.3f, "Đang học"),
-            Course(3, "Giao tiếp tiếng Anh", "Thực hành giao tiếp", "Phạm Thị Lan", 0.8f, "Đang học")
-        )
+fun HomeScreenStudent(
+    navController: NavController,
+    viewModel: AppViewModel
+) {
+    // Collect states from ViewModel
+    val currentStudent by viewModel.currentStudent.collectAsState()
+    val courses by viewModel.studentCourses.collectAsState()
+    val notifications by viewModel.notifications.collectAsState()
+    val studentProgress by viewModel.studentProgress.collectAsState()
+    val examResults by viewModel.examResults.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+
+    // Load data when student is available
+    LaunchedEffect(currentStudent) {
+        currentStudent?.let { student ->
+            viewModel.loadStudentCourses(student.student_id)
+            viewModel.loadStudentNotifications(student.student_id)
+            viewModel.loadStudentProgressData(student.student_id)
+            viewModel.loadStudentExamResults(student.student_id)
+        }
     }
-    val notifications = remember {
-        listOf(
-            Notification(1, "Chúc mừng!", "Bạn đã hoàn thành 70% khóa học Tiếng Anh 101."),
-            Notification(2, "Tin mới", "Bài kiểm tra trình độ mới đã được cập nhật.")
-        )
+
+    // Process data for UI
+    val coursesInProgress = remember(courses, studentProgress) {
+        getCoursesWithProgress(courses, studentProgress)
     }
-    val progressData = listOf(0.85f, 0.88f, 0.92f, 0.96f, 0.90f)
+    val notificationsForDisplay = remember(notifications) {
+        getNotificationsForDisplay(notifications)
+    }
+    val overallProgress = remember(studentProgress) {
+        getOverallProgress(studentProgress)
+    }
+    val progressData = remember(examResults) {
+        getProgressData(examResults)
+    }
 
     Scaffold(
-        topBar = { TopSection(studentName, Progress = 0.6f) },
+        topBar = {
+            currentStudent?.let { student ->
+                TopSection(student.fullname, Progress = overallProgress)
+            }
+        },
         bottomBar = {  },
         containerColor = Color(0xFFF5F5F5)
     ) { paddingValues ->
+
+        // Show loading state
+        if (isLoading && currentStudent == null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+            return@Scaffold
+        }
+
+        // Show error state
+        errorMessage?.let { error ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Có lỗi xảy ra",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = {
+                        viewModel.clearError()
+                        currentStudent?.let { student ->
+                            viewModel.refreshCurrentStudentData()
+                        }
+                    }
+                ) {
+                    Text("Thử lại")
+                }
+            }
+            return@Scaffold
+        }
+
+        // Show empty state if no student
+        if (currentStudent == null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Vui lòng đăng nhập để xem thông tin",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+            return@Scaffold
+        }
+
+        // Main content
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -85,11 +163,24 @@ fun HomeScreenS() {
                 .fillMaxSize()
         ) {
             Spacer(Modifier.height(8.dp))
+
+            // Show loading indicator for content
+            if (isLoading && courses.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                }
+            }
+
             SectionTitle("Khóa đang học")
             CoursesRow(coursesInProgress)
             Spacer(Modifier.height(16.dp))
             SectionTitle("Thông báo")
-            NotificationsColumn(notifications)
+            NotificationsColumn(notificationsForDisplay)
             Spacer(Modifier.height(16.dp))
             SectionTitle("Tiến độ tổng quan")
             ProgressChart(progressData)
@@ -166,7 +257,7 @@ fun SectionTitle(title: String) {
 }
 
 @Composable
-fun CoursesRow(courses: List<Course>) {
+fun CoursesRow(courses: List<CourseDisplayUI>) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)
@@ -177,9 +268,15 @@ fun CoursesRow(courses: List<Course>) {
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    Text(course.name, style = MaterialTheme.typography.titleSmall)
+                    Text(course.courseName, style = MaterialTheme.typography.titleSmall)
                     Spacer(Modifier.height(4.dp))
                     Text(course.status, style = MaterialTheme.typography.bodySmall)
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = "GV: ${course.teacherName}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     Spacer(Modifier.height(8.dp))
                     LinearProgressIndicator(
                         progress = course.progress,
@@ -200,7 +297,7 @@ fun CoursesRow(courses: List<Course>) {
 }
 
 @Composable
-fun NotificationsColumn(notifications: List<Notification>) {
+fun NotificationsColumn(notifications: List<NotificationDisplayUI>) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier
@@ -217,7 +314,7 @@ fun NotificationsColumn(notifications: List<Notification>) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Text(note.title, style = MaterialTheme.typography.titleSmall)
                     Spacer(Modifier.height(2.dp))
-                    Text(note.description, style = MaterialTheme.typography.bodyMedium)
+                    Text(note.message, style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }
@@ -253,3 +350,60 @@ fun ProgressChart(data: List<Float>) {
     }
 }
 
+// Helper functions để xử lý dữ liệu từ ViewModel
+fun getCoursesWithProgress(
+    courses: List<Course>,
+    progressList: List<StudentProgress>
+): List<CourseDisplayUI> {
+    return courses.map { course ->
+        val progress = progressList.find { it.courseId == course.course_id }
+        val progressValue = if (progress?.completionStatus == true) 1.0f else 0.5f // Simplified progress calculation
+
+        CourseDisplayUI(
+            courseId = course.course_id,
+            courseName = course.course_name,
+            description = course.description,
+            teacherName = "Giáo viên", // Will be loaded separately via teacher API
+            progress = progressValue,
+            status = when (course.status) {
+                "Đang mở lớp" -> "Đang học"
+                "Đã hoàn thành" -> "Đã hoàn thành"
+                else -> "Chờ đăng ký"
+            }
+        )
+    }
+}
+
+fun getNotificationsForDisplay(notifications: List<Notification>): List<NotificationDisplayUI> {
+    return notifications.take(5).map { notification ->
+        NotificationDisplayUI(
+            notificationId = notification.notification_id,
+            title = notification.title,
+            message = notification.message
+        )
+    }
+}
+
+fun getOverallProgress(progressList: List<StudentProgress>): Float {
+    if (progressList.isEmpty()) return 0f
+
+    val completedCount = progressList.count { it.completionStatus }
+    return completedCount.toFloat() / progressList.size
+}
+
+fun getProgressData(examResults: List<ExamResult>): List<Float> {
+    return if (examResults.isNotEmpty()) {
+        examResults.map { result ->
+            val avgScore = listOfNotNull(
+                result.listening_score, // Use helper property
+                result.speaking_score,
+                result.reading_score,
+                result.writing_score
+            ).average()
+            (avgScore / 10).toFloat() // API scores are 0-10, not 0-100
+        }
+    } else {
+        // Fallback data when no exam results
+        listOf(0.85f, 0.88f, 0.92f, 0.96f, 0.90f)
+    }
+}

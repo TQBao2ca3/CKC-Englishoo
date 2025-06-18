@@ -1,39 +1,65 @@
 package com.example.ckc_englihoo.Navigation
 
-import LoginForm
-import OnboardingScreen
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.MenuBook
-import androidx.compose.material.icons.rounded.PlayLesson
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import androidx.navigation.NavType
+import com.example.ckc_englihoo.API.AppViewModel
+import com.example.ckc_englihoo.Screen.MainScreen
+import com.example.ckc_englihoo.Screen.SplashScreen
+import com.example.ckc_englihoo.Screen.LoginScreen
+import com.example.ckc_englihoo.Screen.ClassStreamScreen
+import com.example.ckc_englihoo.Screen.CourseRegistrationScreen
 
-
-sealed class NavGrah (var route:String){
-    object SplashScreen: NavGrah("splash_screen")
-    object LoginScreen: NavGrah("login_screen")
-    object RegisterScreen: NavGrah("register_screen")
-    object HomeScreen: NavGrah("home_screen")
+sealed class NavGraph(var route: String) {
+    object Splash: NavGraph("splash")
+    object Login: NavGraph("login")
+    object Main: NavGraph("main")
 }
 
 @Composable
-fun NavigationBarGraph(NavRootController: NavHostController){
+fun RootGraph(navRootController: NavHostController, viewModel: AppViewModel) {
     NavHost(
-        navController = NavRootController,
-        startDestination =  NavGrah.SplashScreen.route
+        navController = navRootController,
+        startDestination = NavGraph.Splash.route
     ) {
-        composable(NavGrah.SplashScreen.route){
-            OnboardingScreen(navController = NavRootController,{},{})
+        composable(NavGraph.Splash.route) {
+            SplashScreen(navController = navRootController, viewModel = viewModel)
         }
-        composable(NavGrah.LoginScreen.route){
-            LoginForm(navController = NavRootController)
+        composable(NavGraph.Login.route) {
+            LoginScreen(navController = navRootController, viewModel = viewModel)
         }
-        composable(NavGrah.HomeScreen.route){
+        composable(NavGraph.Main.route) {
+            MainScreen(navRootController = navRootController, viewModel = viewModel)
+        }
 
+        // ClassStream route with course parameters
+        composable(
+            route = "class_stream/{courseId}/{courseName}",
+            arguments = listOf(
+                navArgument("courseId") { type = NavType.IntType },
+                navArgument("courseName") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val courseId = backStackEntry.arguments?.getInt("courseId") ?: 1
+            val courseName = backStackEntry.arguments?.getString("courseName") ?: "Khóa học"
+
+            ClassStreamScreen(
+                navController = navRootController,
+                viewModel = viewModel,
+                courseId = courseId,
+                classTitle = courseName
+            )
+        }
+
+        // Course Registration route
+        composable("course_registration") {
+            CourseRegistrationScreen(
+                navController = navRootController,
+                viewModel = viewModel
+            )
         }
     }
 }

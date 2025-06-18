@@ -1,3 +1,5 @@
+package com.example.ckc_englihoo
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,11 +23,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.ckc_englihoo.API.AppViewModel
+import com.example.ckc_englihoo.Navigation.NavGraph
 import com.example.ckc_englihoo.R
 @Composable
 fun LoginForm(
     navController: NavController,
-    onLoginClick: (String, String) -> Unit = { _, _ -> },
+    viewModel: AppViewModel,
     onForgotPasswordClick: () -> Unit = {}
 ) {
     var username by remember { mutableStateOf("") }
@@ -170,7 +174,13 @@ fun LoginForm(
 
         // Nút đăng nhập
         Button(
-            onClick = { onLoginClick(username, password) },
+            onClick = {
+                // TODO: Thêm logic xác thực thực tế
+                // Hiện tại chỉ kiểm tra username và password không rỗng
+                if (username.isNotBlank() && password.isNotBlank()) {
+                    navController.navigate(NavGraph.Main.route)
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),

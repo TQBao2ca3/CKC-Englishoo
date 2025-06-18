@@ -33,7 +33,6 @@ enum class QuestionType {
     FillBlank
 }
 
-//@Preview(showBackground = true)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VocabularyScreenStudent(

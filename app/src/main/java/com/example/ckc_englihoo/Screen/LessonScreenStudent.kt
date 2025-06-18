@@ -1,3 +1,4 @@
+
 package com.example.ckc_englihoo.Screen
 
 import androidx.compose.animation.animateContentSize
@@ -36,6 +37,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,6 +48,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,84 +63,97 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.ckc_englihoo.DataClass.*
+import com.example.ckc_englihoo.API.AppViewModel
+import androidx.compose.ui.text.style.TextAlign
+import java.util.Date
 
-data class LessonPart(
-    val title: String,
-    val type: String, // "listening", "reading", "quiz", "speaking"
-    val isCompleted: Boolean,
-    val isLocked: Boolean = false,
-    val duration: String = ""
-)
-
-data class Lesson(
-    val id: Int,
-    val title: String,
-    val description: String,
-    val parts: List<LessonPart>,
-    val isCompleted: Boolean = false,
-    val progress: Float = 0f,
-    val difficulty: String = "Cơ bản"
-)
-
-@Preview(showBackground = true)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LessonScreenStudent(courseName: String = "Tiếng Anh 101") {
-    // Dữ liệu mẫu với thông tin chi tiết hơn
-    val lessons = remember {
-        listOf(
-            Lesson(
-                id = 1,
-                title = "Bài 1: Giới thiệu bản thân",
-                description = "Học cách giới thiệu tên, tuổi và nghề nghiệp",
-                parts = listOf(
-                    LessonPart("Từ vựng cơ bản", "reading", true, false, "10 phút"),
-                    LessonPart("Nghe hội thoại", "listening", true, false, "15 phút"),
-                    LessonPart("Luyện phát âm", "speaking", false, false, "20 phút"),
-                    LessonPart("Kiểm tra", "quiz", false, false, "5 phút")
-                ),
-                isCompleted = false,
-                progress = 0.5f,
-                difficulty = "Cơ bản"
-            ),
-            Lesson(
-                id = 2,
-                title = "Bài 2: Gia đình và bạn bè",
-                description = "Mô tả các thành viên trong gia đình",
-                parts = listOf(
-                    LessonPart("Từ vựng gia đình", "reading", false, false, "12 phút"),
-                    LessonPart("Nghe mô tả", "listening", false, false, "18 phút"),
-                    LessonPart("Thực hành nói", "speaking", false, true, "25 phút"),
-                    LessonPart("Bài tập", "quiz", false, true, "8 phút")
-                ),
-                isCompleted = false,
-                progress = 0f,
-                difficulty = "Cơ bản"
-            ),
-            Lesson(
-                id = 3,
-                title = "Bài 3: Thì hiện tại đơn",
-                description = "Ngữ pháp và cách sử dụng thì hiện tại đơn",
-                parts = listOf(
-                    LessonPart("Lý thuyết", "reading", false, true, "20 phút"),
-                    LessonPart("Ví dụ thực tế", "listening", false, true, "15 phút"),
-                    LessonPart("Luyện tập", "quiz", false, true, "30 phút")
-                ),
-                isCompleted = false,
-                progress = 0f,
-                difficulty = "Trung bình"
-            )
-        )
+fun LessonScreenStudent(
+    navController: NavController,
+    courseName: String = "Tiếng Anh 101",
+    courseId: Int = 1,
+    viewModel: AppViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+) {
+    // Collect states from ViewModel
+    val lessons by viewModel.lessons.collectAsState()
+    val lessonParts by viewModel.lessonParts.collectAsState()
+    val lessonPartScores by viewModel.lessonPartScores.collectAsState()
+    val currentStudent by viewModel.currentStudent.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+
+    // Load data when component mounts
+    LaunchedEffect(courseId) {
+        viewModel.loadLessonsByCourse(courseId)
+        currentStudent?.let { student ->
+            viewModel.loadStudentScores(student.student_id)
+        }
     }
 
-    val completedLessons = lessons.count { it.isCompleted }
-    val totalLessons = lessons.size
-    val overallProgress = lessons.sumOf { it.progress.toDouble() } / totalLessons
+    // Process lessons with details to LessonDisplayUI
+    val allLessons = remember(lessons, lessonParts, lessonPartScores, currentStudent) {
+        getLessonsWithDetails(lessons, lessonParts, lessonPartScores, currentStudent?.student_id ?: 0)
+    }
+
+    val completedLessons = allLessons.count { it.isCompleted }
+    val totalLessons = allLessons.size
+    val overallProgress = if (totalLessons > 0) allLessons.sumOf { it.progress.toDouble() } / totalLessons else 0.0
 
     Scaffold(
         topBar = { LessonTopBar(courseName) },
         containerColor = Color(0xFFF5F5F5)
     ) { paddingValues ->
+
+        // Show loading state
+        if (isLoading && lessons.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+            return@Scaffold
+        }
+
+        // Show error state
+        errorMessage?.let { error ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Có lỗi xảy ra",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = {
+                        viewModel.clearError()
+                        viewModel.loadLessonsByCourse(courseId)
+                    }
+                ) {
+                    Text("Thử lại")
+                }
+            }
+            return@Scaffold
+        }
+
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -157,10 +174,76 @@ fun LessonScreenStudent(courseName: String = "Tiếng Anh 101") {
 
             // Lessons List
             LessonSectionTitle("Danh sách bài học")
-            LessonsList(lessons)
+            LessonsList(allLessons)
 
             Spacer(Modifier.height(16.dp))
         }
+    }
+}
+
+// Function to get lessons with details from ViewModel data
+fun getLessonsWithDetails(
+    lessons: List<Lesson>,
+    allLessonParts: List<LessonPart>,
+    lessonPartScores: List<LessonPartScore>,
+    currentStudentId: Int
+): List<LessonDisplayUI> {
+    return lessons.map { lesson ->
+        val parts = allLessonParts.filter { it.level == lesson.level } // Match by level instead of lessonId
+        val partsWithDetails = parts.map { part ->
+            val score = lessonPartScores.find {
+                it.lesson_part_id == part.lesson_part_id && it.student_id == currentStudentId
+            }
+            val isCompleted = score != null
+            val isLocked = when (part.order_index) {
+                1 -> false // First part is always unlocked
+                else -> {
+                    // Check if previous part is completed
+                    val prevPart = parts.find { it.order_index == part.order_index - 1 }
+                    prevPart?.let { prev ->
+                        lessonPartScores.none {
+                            it.lesson_part_id == prev.lesson_part_id && it.student_id == currentStudentId
+                        }
+                    } ?: true
+                }
+            }
+
+            LessonPartDisplayUI(
+                lessonPartId = part.lesson_part_id,
+                title = part.content,
+                type = part.part_type,
+                isCompleted = isCompleted,
+                isLocked = isLocked,
+                duration = when (part.part_type) {
+                    "Reading" -> "10-15 phút"
+                    "Listening" -> "15-20 phút"
+                    "Speaking" -> "20-25 phút"
+                    "Practice Test" -> "5-10 phút"
+                    else -> "10 phút"
+                },
+                score = score?.score ?: 0.0
+            )
+        }
+
+        val completedParts = partsWithDetails.count { it.isCompleted }
+        val totalParts = partsWithDetails.size
+        val progress = if (totalParts > 0) completedParts.toFloat() / totalParts else 0f
+        val isCompleted = progress >= 1.0f
+
+        LessonDisplayUI(
+            lessonId = lesson.level, // Use level as ID
+            title = lesson.title,
+            description = lesson.description,
+            parts = partsWithDetails,
+            isCompleted = isCompleted,
+            progress = progress,
+            difficulty = when (lesson.level) {
+                "A1" -> "Cơ bản"
+                "A2" -> "Trung bình"
+                "A3", "B1" -> "Nâng cao"
+                else -> "Cơ bản"
+            }
+        )
     }
 }
 
@@ -282,7 +365,7 @@ fun LessonSectionTitle(title: String) {
 
 // Component Lessons List
 @Composable
-fun LessonsList(lessons: List<Lesson>) {
+fun LessonsList(lessons: List<LessonDisplayUI>) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
@@ -296,7 +379,7 @@ fun LessonsList(lessons: List<Lesson>) {
 
 // Component Enhanced Lesson Card
 @Composable
-fun EnhancedLessonCard(lesson: Lesson) {
+fun EnhancedLessonCard(lesson: LessonDisplayUI) {
     var expanded by remember { mutableStateOf(false) }
 
     ElevatedCard(
@@ -395,7 +478,7 @@ fun EnhancedLessonCard(lesson: Lesson) {
 }
 // Component Lesson Part Item
 @Composable
-fun LessonPartItem(part: LessonPart) {
+fun LessonPartItem(part: LessonPartDisplayUI) {
     val icon = when (part.type) {
         "listening" -> Icons.Default.VolumeUp
         "reading" -> Icons.Default.Book

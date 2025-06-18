@@ -1,3 +1,5 @@
+package com.example.ckc_englihoo
+
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -8,8 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import com.example.ckc_englihoo.API.AppViewModel
+import com.example.ckc_englihoo.Navigation.NavGraph
 import com.example.ckc_englihoo.R
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -51,6 +53,7 @@ val pressedColor = Color(0xFF63A4FF) // màu xanh dương nhạt
 @Composable
 fun OnboardingScreen(
     navController: NavController,
+    viewModel: AppViewModel,
     onStudentClick: () -> Unit = {},
     onTeacherClick: () -> Unit = {}
 ) {
@@ -458,6 +461,87 @@ fun RoleCard(
     }
 }
 
+
+@Composable
+fun RoleSelectionScreen(
+    onLoginClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Logo ở đầu
+        Row(
+            modifier = Modifier.padding(vertical = 32.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.group),
+                contentDescription = "Logo",
+                modifier = Modifier.size(40.dp).padding(end = 12.dp),
+                colorFilter = ColorFilter.tint(Color(0xFF4355EE))
+            )
+            Text(
+                text = "CKC ENGLISHOO",
+                color = Color(0xFF4355EE),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.ExtraBold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        // Tiêu đề
+        Text(
+            text = "Chọn vai trò của bạn",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Vui lòng chọn vai trò để tiếp tục sử dụng ứng dụng",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(48.dp))
+
+        // Role cards
+        RoleCard(
+            imageRes = R.drawable.admin,
+            title = "Quản trị viên",
+            description = "Quản lý người dùng và hệ thống",
+            onClick = onLoginClick
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        RoleCard(
+            imageRes = R.drawable.teacher,
+            title = "Giảng viên",
+            description = "Quản lý lớp học và giảng dạy",
+            onClick = onLoginClick
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        RoleCard(
+            imageRes = R.drawable.student,
+            title = "Sinh viên",
+            description = "Truy cập khóa học và bài tập",
+            onClick = onLoginClick
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+    }
+}
 
 data class OnboardingPage(
     val image: Int,
