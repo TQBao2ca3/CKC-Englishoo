@@ -274,7 +274,7 @@ fun CreateAssignmentTeacher(
                     .padding(vertical = 8.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Topic,
+                    imageVector = Icons.Default.Label,
                     contentDescription = "Topic",
                     tint = Color(0xFF2196F3),
                     modifier = Modifier.size(20.dp)

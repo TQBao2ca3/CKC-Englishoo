@@ -76,6 +76,10 @@ dependencies {
 
     // SVG support
     implementation("com.caverock:androidsvg:1.4")
+    implementation(libs.volley)
+
+    // Coil for image loading
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
     // Ads SDK (commented out - uncomment if needed)
     // implementation(libs.ads.mobile.sdk)

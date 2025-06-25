@@ -27,6 +27,15 @@ import com.example.ckc_englihoo.Data.TeacherClass
 import com.example.ckc_englihoo.Data.ClassRepository
 import com.example.ckc_englihoo.Data.LegacyClassPost
 import com.example.ckc_englihoo.Screen.MyProfileTeacher
+import com.example.ckc_englihoo.Screen.ExerciseScreenStudent
+import com.example.ckc_englihoo.Screen.Exercises.ExerciseMenuScreen
+import com.example.ckc_englihoo.Screen.Exercises.MultipleChoiceExercise
+import com.example.ckc_englihoo.Screen.Exercises.MatchImageExercise
+import com.example.ckc_englihoo.Screen.Exercises.CategorizeExercise
+import com.example.ckc_englihoo.Screen.Exercises.FillBlankExercise
+import com.example.ckc_englihoo.Screen.Exercises.WordOrderExercise
+import com.example.ckc_englihoo.Screen.Exercises.SentenceTransformExercise
+
 
 sealed class RouteScreen(val route : String){
     object OnboardingScreen:RouteScreen(route = "onboarding_screen")
@@ -46,13 +55,21 @@ sealed class RouteScreen(val route : String){
     object CreatePost:RouteScreen(route = "create_post/{classId}")
     object CreateAssignment:RouteScreen(route = "create_assignment/{assignmentType}/{classId}")
     object CreateAnnouncement:RouteScreen(route = "create_announcement/{classId}")
+    object ExerciseScreen:RouteScreen(route = "exercise_screen")
+    object ExerciseMenu:RouteScreen(route = "exercise_menu")
+    object MultipleChoiceExercise:RouteScreen(route = "multiple_choice_exercise")
+    object MatchImageExercise:RouteScreen(route = "match_image_exercise")
+    object CategorizeExercise:RouteScreen(route = "categorize_exercise")
+    object FillBlankExercise:RouteScreen(route = "fill_blank_exercise")
+    object WordOrderExercise:RouteScreen(route = "word_order_exercise")
+    object SentenceTransformExercise:RouteScreen(route = "sentence_transform_exercise")
 }
 
 @Composable
 fun RootGraph(navController: NavHostController) {
 
 
-    NavHost(navController = navController, startDestination = RouteScreen.OnboardingScreen.route) {
+    NavHost(navController = navController, startDestination = "exercise_menu") {
         composable(RouteScreen.OnboardingScreen.route) {
             OnboardingScreen(
                 navController = navController,
@@ -75,6 +92,9 @@ fun RootGraph(navController: NavHostController) {
                 },
                 onNavigateToSettings = {
                     navController.navigate(RouteScreen.Settings.route)
+                },
+                onNavigateToExercises = {
+                    navController.navigate(RouteScreen.ExerciseMenu.route)
                 },
                 onLogout = {
                     navController.navigate(RouteScreen.OnboardingScreen.route) {
@@ -354,5 +374,50 @@ fun RootGraph(navController: NavHostController) {
                 classId = classId
             )
         }
+
+        // Exercise Screen
+        composable("exercise_screen") {
+            ExerciseScreenStudent(
+                navController = navController,
+                exerciseTitle = "Bài tập tiếng Anh"
+            )
+        }
+
+        // Exercise Menu Screen
+        composable("exercise_menu") {
+            ExerciseMenuScreen(navController = navController)
+        }
+
+        // Multiple Choice Exercise
+        composable("multiple_choice_exercise") {
+            MultipleChoiceExercise(navController = navController)
+        }
+
+        // Match Image Exercise
+        composable("match_image_exercise") {
+            MatchImageExercise(navController = navController)
+        }
+
+        // Categorize Exercise
+        composable("categorize_exercise") {
+            CategorizeExercise(navController = navController)
+        }
+
+        // Fill Blank Exercise
+        composable("fill_blank_exercise") {
+            FillBlankExercise(navController = navController)
+        }
+
+        // Word Order Exercise
+        composable("word_order_exercise") {
+            WordOrderExercise(navController = navController)
+        }
+
+        // Sentence Transform Exercise
+        composable("sentence_transform_exercise") {
+            SentenceTransformExercise(navController = navController)
+        }
+
+
     }
 }

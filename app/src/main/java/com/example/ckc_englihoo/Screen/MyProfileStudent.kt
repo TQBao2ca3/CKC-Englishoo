@@ -46,6 +46,7 @@ import com.example.ckc_englihoo.LoadingComponent
 fun MyProfileStudent(
     onNavigateToStudyProgress: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToExercises: () -> Unit = {},
     onLogout: () -> Unit = {}
 ) {
     // Định nghĩa màu sắc
@@ -181,7 +182,26 @@ fun MyProfileStudent(
                                     .clip(RoundedCornerShape(12.dp))
                             )
 
-                            // 3. Đăng xuất
+                            // 3. Làm bài tập
+                            DropdownMenuItem(
+                                text = {
+                                    MenuItemContent(
+                                        icon = Icons.Default.Quiz,
+                                        title = "Làm bài tập",
+                                        iconColor = Color(0xFF9C27B0)
+                                    )
+                                },
+                                onClick = {
+                                    // Chuyển sang màn hình bài tập
+                                    showMenu = false
+                                    onNavigateToExercises()
+                                },
+                                modifier = Modifier
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                            )
+
+                            // 4. Đăng xuất
                             DropdownMenuItem(
                                 text = {
                                     MenuItemContent(

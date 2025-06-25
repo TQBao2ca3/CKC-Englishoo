@@ -1,0 +1,26 @@
+WordOrderExercise Debug Log:
+
+Current Logic:
+1. hasSelectedAnswer = selectedWords.isNotEmpty()
+2. allQuestionsAnswered = currentQuestionIndex == questions.size - 1 && hasSelectedAnswer
+3. Button enabled = hasSelectedAnswer
+4. Button text = if (allQuestionsAnswered) "Nộp bài" else "Tiếp theo"
+
+Expected Behavior:
+- Câu 1-9: Chọn 1 từ → Button "Tiếp theo" enable
+- Câu 10: Chọn 1 từ → Button "Nộp bài" enable
+
+Current Issue:
+- User reports button only enables when ALL words are selected
+- This suggests hasSelectedAnswer is not working correctly
+
+Possible Causes:
+1. selectedWords not updating correctly when word is clicked
+2. hasSelectedAnswer logic is wrong
+3. Build cache issue
+4. Different logic somewhere else overriding this
+
+Next Steps:
+1. Add debug logs to see selectedWords value
+2. Check if onWordSelected is being called
+3. Verify hasSelectedAnswer calculation

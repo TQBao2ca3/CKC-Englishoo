@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
             CKC_EnglihooTheme {
                 val navController = rememberNavController()
                 RootGraph(navController = navController)
+
             }
         }
     }
