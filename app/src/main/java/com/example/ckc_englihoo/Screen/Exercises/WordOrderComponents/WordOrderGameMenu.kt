@@ -23,7 +23,7 @@ fun WordOrderGameMenu(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 100.dp) // Padding để không che BottomAppBar
+            .padding(bottom = 130.dp) // Padding để không che BottomAppBar
             .background(Color.Black.copy(alpha = 0.5f))
     ) {
         // Bottom sheet content

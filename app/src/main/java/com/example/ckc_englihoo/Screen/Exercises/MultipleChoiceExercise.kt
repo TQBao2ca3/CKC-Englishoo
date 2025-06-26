@@ -14,13 +14,7 @@ import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
 import com.example.ckc_englihoo.Screen.Exercises.MultipleChoiceComponents.*
 
-data class MultipleChoiceQuestion(
-    val id: String,
-    val question: String,
-    val options: List<String>,
-    val correctAnswer: String,
-    val explanation: String = ""
-)
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,50 +34,7 @@ fun MultipleChoiceExercise(
     val questionResults = remember { mutableStateMapOf<Int, Boolean>() }
 
     // Sample multiple choice questions
-    val questions = remember {
-        listOf(
-            MultipleChoiceQuestion(
-                id = "1",
-                question = "What is the capital of Vietnam?",
-                options = listOf("Ho Chi Minh City", "Hanoi", "Da Nang", "Hue"),
-                correctAnswer = "Hanoi",
-                explanation = "Hanoi is the capital and second-largest city of Vietnam."
-            ),
-            MultipleChoiceQuestion(
-                id = "2",
-                question = "Which word is a noun?",
-                options = listOf("Beautiful", "Quickly", "House", "Run"),
-                correctAnswer = "House",
-                explanation = "A noun is a word that names a person, place, thing, or idea."
-            ),
-            MultipleChoiceQuestion(
-                id = "3",
-                question = "Choose the correct past tense of 'go':",
-                options = listOf("Goed", "Went", "Gone", "Going"),
-                correctAnswer = "Went",
-                explanation = "The past tense of 'go' is 'went'."
-            ),
-            MultipleChoiceQuestion(
-                id = "4",
-                question = "What does 'Hello' mean in Vietnamese?",
-                options = listOf("Tạm biệt", "Xin chào", "Cảm ơn", "Xin lỗi"),
-                correctAnswer = "Xin chào",
-                explanation = "'Hello' means 'Xin chào' in Vietnamese."
-            ),
-            MultipleChoiceQuestion(
-                id = "5",
-                question = "Which sentence is correct?",
-                options = listOf(
-                    "She don't like apples",
-                    "She doesn't like apples",
-                    "She not like apples",
-                    "She no like apples"
-                ),
-                correctAnswer = "She doesn't like apples",
-                explanation = "Use 'doesn't' with third person singular subjects."
-            )
-        )
-    }
+    val questions = remember { getSampleMultipleChoiceQuestions() }
 
     val currentQuestion = questions[currentQuestionIndex]
     val selectedAnswer = userAnswers[currentQuestionIndex] ?: ""

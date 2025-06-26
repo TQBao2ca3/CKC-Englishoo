@@ -11,10 +11,18 @@ data class WordOrderQuestion(
 val sampleWordOrderQuestions = listOf(
     WordOrderQuestion(
         id = "1",
-        question = "Đây là cuốn sách của tôi",
-        scrambledWords = listOf("book", "This", "my", "is"),
-        correctAnswer = "This is my book",
-        explanation = "Cấu trúc: This + is + my + book (Đây là cuốn sách của tôi)."
+        question = "Đây là một con mèo và một con chó",
+        scrambledWords = listOf("cat", "This", "a", "is", "and", "dog","a"),
+        correctAnswer = "This is a cat and a dog",
+        explanation = "Cấu trúc: This is a + [danh từ] and a + [danh từ] " +
+                "(Đây là một con mèo và một con chó).Cấu trúc: This is a + [danh từ] and a + [danh từ] (Đây là một con mèo và một con chó)." +
+                "Cấu trúc: This is a + [danh từ] and a + [danh từ] (Đây là một con mèo và một con chó)." +
+                "Cấu trúc: This is a + [danh từ] and a + [danh từ] \" +\n" +
+                "\"(Đây là một con mèo và một con chó).Cấu trúc: This is a + [danh từ] and a + [danh từ] (Đây là một con mèo và một con chó).\" +\n" +
+                "\"Cấu trúc: This is a + [danh từ] and a + [danh từ] (Đây là một con mèo và một con chó)." +
+                "Cấu trúc: This is a + [danh từ] and a + [danh từ] \" +\n" +
+                "\"(Đây là một con mèo và một con chó).Cấu trúc: This is a + [danh từ] and a + [danh từ] (Đây là một con mèo và một con chó).\" +\n" +
+                "\"Cấu trúc: This is a + [danh từ] and a + [danh từ] (Đây là một con mèo và một con chó)."
     ),
     WordOrderQuestion(
         id = "2",

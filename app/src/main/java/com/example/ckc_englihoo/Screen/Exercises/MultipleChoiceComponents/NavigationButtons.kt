@@ -71,20 +71,19 @@ fun NavigationButtons(
                 }
             }
         } else {
-            // Continue/Finish button (show after submitting)
-            val isLastQuestion = currentQuestionIndex >= totalQuestions - 1
+            // Complete button (show after submitting at all questions)
             Button(
-                onClick = if (isLastQuestion) onFinish else onNext,
+                onClick = onFinish,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
                     .shadow(
                         elevation = 12.dp,
                         shape = RoundedCornerShape(16.dp),
-                        ambientColor = Color(0xFF3B82F6).copy(alpha = 0.3f)
+                        ambientColor = Color(0xFF4CAF50).copy(alpha = 0.3f)
                     ),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF2563EB)
+                    containerColor = Color(0xFF4CAF50)
                 ),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -92,18 +91,18 @@ fun NavigationButtons(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = if (isLastQuestion) "Hoàn thành" else "Tiếp theo",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
                     Icon(
-                        imageVector = if (isLastQuestion) Icons.Default.Check else Icons.Default.ArrowForward,
+                        imageVector = Icons.Default.Check,
                         contentDescription = null,
                         tint = Color.White,
                         modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Hoàn thành",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
                     )
                 }
             }

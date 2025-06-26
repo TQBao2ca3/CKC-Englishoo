@@ -41,7 +41,7 @@ fun ResultDialog(
     val resultIcon = when {
         percentage >= 80 -> Icons.Default.Star
         percentage >= 60 -> Icons.Default.ThumbUp
-        else -> Icons.Default.Refresh
+        else -> Icons.Default.Check
     }
 
     Dialog(onDismissRequest = { }) {

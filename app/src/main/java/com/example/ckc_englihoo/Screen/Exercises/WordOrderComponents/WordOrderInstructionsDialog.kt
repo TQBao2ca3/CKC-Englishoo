@@ -20,7 +20,7 @@ fun WordOrderInstructionsDialog(onDismiss: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 95.dp) // Padding để không che BottomAppBar
+            .padding(bottom =130.dp) // Padding để không che BottomAppBar
             .background(Color.Black.copy(alpha = 0.5f))
     ) {
         // Bottom sheet content
@@ -103,7 +103,7 @@ fun WordOrderInstructionsDialog(onDismiss: () -> Unit) {
                     )
                     InstructionStep(
                         number = "5",
-                        text = "Làm đủ 10 câu rồi nhấn menu (⋮) để nộp bài",
+                        text = "Làm đủ 10 câu rồi nhấn nộp bài",
                         color = Color(0xFF7C3AED)
                     )
                 }
